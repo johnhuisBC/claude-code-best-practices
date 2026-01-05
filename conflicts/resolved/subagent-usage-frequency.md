@@ -57,17 +57,11 @@ The threshold is: **Does this task benefit from a fresh context or parallel exec
 2. Measure: time to completion, quality of result, main context cleanliness
 3. Document the threshold where subagents become beneficial
 
-## Status
-**Leaning toward Position A (liberal usage)**: Use subagents freely unless the task is super minor.
+## Resolution
 
-## Testing Plan
+**Use subagents liberally.** Skip only for trivial tasks (< 2-3 tool calls).
 
-To validate:
-1. For a medium-complexity task, try with and without Explore subagent
-2. Measure: time to completion, quality of result, main context cleanliness
-3. Document the threshold where subagents become beneficial
-
-Current hypothesis: The overhead of subagents is worth it for anything beyond trivial tasks.
+Boris Cherny uses custom subagents for "most PRs" and thinks of them as automating common workflows. The overhead is worth it for anything beyond trivial tasks.
 
 ---
 
@@ -78,3 +72,4 @@ Current hypothesis: The overhead of subagents is worth it for anything beyond tr
 | 2025-01-03 | Documented conflict | Initial setup - logical resolution proposed |
 | 2025-01-04 | Leaning toward liberal usage | User input: use freely unless super minor; needs testing to confirm |
 | 2026-01-05 | Strong evidence for liberal usage | Boris Cherny (Claude Code creator) uses custom subagents regularly; thinks of them as "automating the most common workflows that I do for most PRs" |
+| 2026-01-05 | **Resolved: Liberal usage** | Creator's practice + user preference confirms: use freely, skip only for trivial tasks |

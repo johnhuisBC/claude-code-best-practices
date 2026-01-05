@@ -45,8 +45,11 @@ However, this may depend on:
 - Cost-sensitive situations
 - Tasks where you can easily course-correct
 
-## Status
-**Open** - Need more data on cost/quality tradeoffs in practice.
+## Resolution
+
+**Use Opus 4.5 with thinking as the default.**
+
+Boris Cherny created Claude Code and uses it daily. His recommendation carries significant weight - less steering and better tool use means faster total time despite slower per-token speed.
 
 ---
 
@@ -55,3 +58,4 @@ However, this may depend on:
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-01-05 | Documented conflict | Boris Cherny strongly advocates Opus; community varies |
+| 2026-01-05 | **Resolved: Opus default** | Creator's recommendation + "less steering = faster overall" logic is compelling |
