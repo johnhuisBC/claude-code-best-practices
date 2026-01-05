@@ -59,7 +59,7 @@ Instead of pre-loading all information, maintain lightweight references and load
 | Large feature work | Use Dev Docs system (see below) |
 | Model ignoring feedback/looping | Jump to clean node, compact, start fresh |
 
-**See also**: [Conflict: Context Threshold](conflicts/active/context-threshold.md)
+**See also**: [Resolved: Context Threshold](conflicts/resolved/context-threshold.md)
 
 ---
 
@@ -73,7 +73,7 @@ CLAUDE.md provides persistent project context that loads automatically. It becom
 - **Maximum**: 500 lines
 - **Strategy**: Reference external files for detailed documentation
 
-**See also**: [Conflict: CLAUDE.md Size](conflicts/active/claude-md-size.md)
+**See also**: [Resolved: CLAUDE.md Size](conflicts/resolved/claude-md-size.md)
 
 ### Essential Sections
 

@@ -58,7 +58,16 @@ The threshold is: **Does this task benefit from a fresh context or parallel exec
 3. Document the threshold where subagents become beneficial
 
 ## Status
-**Partially resolved**: Logic is clear, but optimal threshold needs empirical tuning
+**Leaning toward Position A (liberal usage)**: Use subagents freely unless the task is super minor.
+
+## Testing Plan
+
+To validate:
+1. For a medium-complexity task, try with and without Explore subagent
+2. Measure: time to completion, quality of result, main context cleanliness
+3. Document the threshold where subagents become beneficial
+
+Current hypothesis: The overhead of subagents is worth it for anything beyond trivial tasks.
 
 ---
 
@@ -67,3 +76,4 @@ The threshold is: **Does this task benefit from a fresh context or parallel exec
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2025-01-03 | Documented conflict | Initial setup - logical resolution proposed |
+| 2025-01-04 | Leaning toward liberal usage | User input: use freely unless super minor; needs testing to confirm |
