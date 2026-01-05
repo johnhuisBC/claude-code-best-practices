@@ -18,6 +18,7 @@ Catalog of all sources used to build best practices, with dates and status.
 | [Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | 2025-01 | Active | [Summary](summaries/2025-01-anthropic-context-engineering.md) |
 | [Using CLAUDE.md Files](https://claude.com/blog/using-claude-md-files) | 2025-01 | Active | [Summary](summaries/2025-01-anthropic-claude-md-files.md) |
 | [Claude Code Documentation](https://code.claude.com/docs) | 2025-01 | Active | [Summary](summaries/2025-01-claude-code-docs.md) |
+| [Boris Cherny Setup (Twitter)](https://x.com/bcherny/status/2007179832300581177) | 2026-01 | Active | [Summary](summaries/2026-01-bcherny-twitter-setup.md) |
 
 ## Community Sources
 

@@ -77,3 +77,4 @@ Current hypothesis: The overhead of subagents is worth it for anything beyond tr
 |------|----------|-----------|
 | 2025-01-03 | Documented conflict | Initial setup - logical resolution proposed |
 | 2025-01-04 | Leaning toward liberal usage | User input: use freely unless super minor; needs testing to confirm |
+| 2026-01-05 | Strong evidence for liberal usage | Boris Cherny (Claude Code creator) uses custom subagents regularly; thinks of them as "automating the most common workflows that I do for most PRs" |

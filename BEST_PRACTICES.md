@@ -10,17 +10,19 @@ A synthesized guide from official Anthropic documentation and community experts.
 
 1. [Context Management](#context-management)
 2. [CLAUDE.md Configuration](#claudemd-configuration)
-3. [Workflows](#workflows)
-4. [Dev Docs System](#dev-docs-system)
-5. [Prompting Techniques](#prompting-techniques)
-6. [Skills & Auto-Activation](#skills--auto-activation)
-7. [Subagents](#subagents)
-8. [Hooks](#hooks)
-9. [Tool Usage](#tool-usage)
-10. [Testing & Quality](#testing--quality)
-11. [Multi-Claude Workflows](#multi-claude-workflows)
-12. [Slash Commands](#slash-commands)
-13. [Common Pitfalls](#common-pitfalls)
+3. [Model Choice](#model-choice)
+4. [Workflows](#workflows)
+5. [Dev Docs System](#dev-docs-system)
+6. [Prompting Techniques](#prompting-techniques)
+7. [Skills & Auto-Activation](#skills--auto-activation)
+8. [Subagents](#subagents)
+9. [Hooks](#hooks)
+10. [Tool Usage](#tool-usage)
+11. [Testing & Quality](#testing--quality)
+12. [Multi-Claude Workflows](#multi-claude-workflows)
+13. [Slash Commands](#slash-commands)
+14. [Permissions](#permissions)
+15. [Common Pitfalls](#common-pitfalls)
 
 ---
 
@@ -124,6 +126,42 @@ Project-specific quirks and warnings
 - Add instructions you find yourself repeating
 - Effective files evolve with your codebase
 
+### Team Sharing
+
+**Key insight from Boris Cherny (Claude Code creator)**:
+> "Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time."
+
+- Check CLAUDE.md into git for team sharing
+- Whole team contributes updates
+- Use GitHub Actions to let Claude propose CLAUDE.md updates in PRs (via `/install-github-action`)
+- Each team maintains their own CLAUDE.md - it's each team's responsibility to keep theirs current
+
+This creates a **compounding effect**: mistakes become permanent learnings.
+
+---
+
+## Model Choice
+
+### The Default: Opus 4.5 with Thinking
+
+Boris Cherny (Claude Code creator) recommends using **Opus 4.5 with thinking for everything**:
+
+> "It's the best coding model I've ever used, and even though it's bigger & slower than Sonnet, since you have to steer it less and it's better at tool use, it is almost always faster than using a smaller model in the end."
+
+**Why Opus wins on total time**:
+- Less steering required = fewer iterations
+- Better tool use = more efficient execution
+- Higher first-attempt success rate
+- Net time savings despite slower per-token speed
+
+### When to Consider Sonnet
+
+- Simple, well-defined tasks
+- Cost-sensitive situations
+- Tasks where you can easily course-correct
+
+**See also**: [Conflict: Model Choice](conflicts/active/model-choice.md)
+
 ---
 
 ## Workflows
@@ -136,6 +174,17 @@ Project-specific quirks and warnings
 4. **Commit**: Generate commits with proper messages
 
 > This prevents premature coding and improves results for complex problems.
+
+### Plan Mode First
+
+**Boris Cherny's approach**: Most sessions start in Plan mode (`shift+tab` twice).
+
+1. Enter Plan mode
+2. Go back and forth with Claude until plan looks good
+3. Switch to auto-accept edits mode
+4. Claude can usually 1-shot it
+
+> "A good plan is really [important]" — getting the plan right enables single-shot implementation.
 
 ### Extended Thinking
 
@@ -345,6 +394,19 @@ Subagents are specialized agents that can work in parallel or with fresh context
 - Use `run_in_background` for long tasks
 - Use independent subagents to verify implementations don't overfit to tests
 
+### Custom Subagents
+
+Boris Cherny uses custom subagents stored in `.claude/agents/` to automate common workflows:
+
+- `build-validator.md` - Validates builds
+- `code-architect.md` - Architectural planning
+- `code-simplifier.md` - Simplifies code after Claude is done working
+- `verify-app.md` - Detailed instructions for end-to-end testing
+
+> "I think of subagents as automating the most common workflows that I do for most PRs."
+
+See: [Sub-agents documentation](https://code.claude.com/docs/en/sub-agents)
+
 ### Multi-Agent Verification (Advanced)
 
 For critical decisions, spawn multiple specialist subagents that work independently:
@@ -399,10 +461,27 @@ See [Skills & Auto-Activation](#skills--auto-activation) above.
 
 ### Hook Warnings
 
-**Avoid automatic formatting hooks** (Prettier, etc.):
-- File modifications trigger `<system-reminder>` notifications
-- Can consume 160k+ tokens in just a few rounds
-- Better to format manually between sessions
+**Alternative: PostToolUse for Formatting**
+
+Boris Cherny's team uses a PostToolUse hook to format code after edits. Claude generates well-formatted code ~90% of the time; the hook handles the last 10%:
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Write|Edit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bun run format || true"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Note**: Be mindful of token usage if hooks modify files frequently.
 
 ### Hook Pipeline Example
 
@@ -440,6 +519,19 @@ Result: Clean, error-free code
 - Configure at project, global, or shared (`.mcp.json`) levels
 - Use `--mcp-debug` when troubleshooting
 
+**Boris Cherny's MCP usage**: Claude Code uses all his tools via MCP - Slack (searches and posts), BigQuery queries, Sentry error logs. Configuration is checked into `.mcp.json` and shared with the team:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://slack.mcp.anthropic.com/mcp"
+    }
+  }
+}
+```
+
 ---
 
 ## Testing & Quality
@@ -455,6 +547,24 @@ Result: Clean, error-free code
 - Use independent subagent to verify (fresh perspective)
 - Check for test overfitting
 - Run full test suite, not just new tests
+
+### Verification is Critical
+
+**Boris Cherny's most important tip**:
+> "Probably the most important thing to get great results out of Claude Code -- give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result."
+
+**Verification approaches by domain**:
+- **Web apps**: Use Chrome extension to open browser, test UI, iterate
+- **CLI tools**: Run bash commands to test functionality
+- **Libraries**: Run test suite
+- **Mobile**: Test in phone simulator
+
+**For long-running tasks**:
+- Prompt Claude to verify with a background agent when done
+- Use an agent Stop hook for deterministic verification
+- Use ralph-wiggum plugin for automated verification
+
+See: [Chrome extension](https://code.claude.com/docs/en/chrome)
 
 ### Quality Gates (via Hooks)
 
@@ -488,6 +598,20 @@ cd ../project-feature-a && claude
 - Create 3-4 git checkouts in separate folders
 - Run Claude in each terminal tab
 - Cycle through to approve/deny permission requests
+
+### Parallel Sessions (Boris Cherny's Setup)
+
+Boris runs many Claudes simultaneously:
+- **5 terminal tabs** numbered 1-5, each running Claude Code
+- **5-10 web sessions** on claude.ai/code in parallel
+- **Mobile sessions** started from Claude iOS app throughout the day
+
+**Workflow patterns**:
+- Hand off local sessions to web (using `&`) when stepping away
+- "Teleport" between local and web sessions
+- Use iTerm2 system notifications to know when Claude needs input
+
+See: [Terminal notifications config](https://code.claude.com/docs/en/terminal-config#iterm-2-system-notifications)
 
 ---
 
@@ -528,6 +652,33 @@ Create commands that create commands:
 ```
 
 See: https://github.com/tokenbender/agent-guides
+
+---
+
+## Permissions
+
+### Avoid `--dangerously-skip-permissions`
+
+Boris Cherny's approach: Use `/permissions` to pre-allow common bash commands that are safe in your environment, rather than skipping all permissions.
+
+**Benefits**:
+- Maintains safety guardrails
+- Avoids unnecessary permission prompts
+- Settings can be checked into `.claude/settings.json` and shared with team
+
+**Example allowed commands**:
+```
+Bash(bun run build:*)
+Bash(bun run test:*)
+Bash(bun run lint:*)
+Bash(git status:*)
+Bash(git diff:*)
+```
+
+**When to use `--dangerously-skip-permissions`**:
+- Only in offline, isolated containers/sandboxes
+- For long-running unattended tasks where you've verified the safety
+- Combined with `--permission-mode=dontAsk` for supervised but unblocked execution
 
 ---
 
@@ -591,6 +742,7 @@ All practices in this document are synthesized from:
 - [Anthropic: Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Anthropic: Using CLAUDE.md Files](https://claude.com/blog/using-claude-md-files)
 - [Claude Code Official Documentation](https://code.claude.com/docs)
+- [Boris Cherny Setup (Twitter)](https://x.com/bcherny/status/2007179832300581177) - Claude Code creator's personal workflow
 - [Reddit: Tips from 6 Months of Hardcore Use](https://www.reddit.com/r/ClaudeCode/comments/1oivs81/claude_code_is_a_beast_tips_from_6_months_of/)
 - [Sankalp: Claude Code 2.0 Experience](https://sankalp.bearblog.dev/my-experience-with-claude-code-20-and-how-to-get-better-at-using-coding-agents)
 - [Awesome Claude Code](https://github.com/hesreallyhim/awesome-claude-code)
@@ -600,4 +752,4 @@ See [sources/index.md](sources/index.md) for full source catalog.
 
 ---
 
-*Last updated: 2025-01-04*
+*Last updated: 2026-01-05*
